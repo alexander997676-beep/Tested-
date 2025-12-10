@@ -3,42 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live TV Channel</title>
+    <title>Pakistani Live TV Channels</title>
     <style>
-        /* Ye puri body ka style hai (Background color) */
+        /* Dark Theme Design */
         body {
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0; /* Halka grey rang */
+            background-color: #1a1a1a; /* Dark background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             flex-direction: column;
-            font-family: Arial, sans-serif;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        /* Ye wo "Daba" hai jisme video chalegi */
-        .tv-box {
-            width: 90%; /* Mobile ke liye 90% width */
-            max-width: 800px; /* Computer par maximum size */
-            background-color: #000;
+        h1 {
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        /* TV Box Design */
+        .tv-wrapper {
+            width: 90%;
+            max-width: 850px;
+            background: #000;
             padding: 10px;
-            border-radius: 15px; /* Kinare gol karne ke liye */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Shadow effect */
-            border: 4px solid #333;
+            border: 5px solid #444;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2); /* Green glow effect */
+            margin-bottom: 30px;
         }
 
-        /* Video ko responsive banane ke liye setting */
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%; /* 16:9 Ratio */
             height: 0;
             overflow: hidden;
-            border-radius: 10px;
         }
 
-        /* Iframe ki setting taake wo dabe mein fit rahe */
         .video-container iframe {
             position: absolute;
             top: 0;
@@ -47,33 +50,129 @@
             height: 100%;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        /* Channels List Design */
+        .channel-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 90%;
+            max-width: 850px;
+            padding-bottom: 50px;
+        }
+
+        .channel-btn {
+            background-color: #333;
+            border: 2px solid #555;
+            color: white;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            flex: 1 1 150px; /* Responsive buttons */
+            text-align: center;
+        }
+
+        .channel-btn:hover {
+            background-color: #009933; /* Pakistan Green on hover */
+            border-color: #00ff55;
+            transform: translateY(-3px);
+        }
+
+        .active-btn {
+            background-color: #009933;
+            border-color: #00ff55;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            color: #777;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Heading -->
-    <h1>Live Channel Stream</h1>
+    <h1>Pakistani Live Channels</h1>
 
-    <!-- Ye raha wo Daba (Box) -->
-    <div class="tv-box">
+    <!-- Main TV Screen -->
+    <div class="tv-wrapper">
         <div class="video-container">
-            <!-- Aapka Video Link Yahan Hai -->
+            <!-- Default Channel (Aapka diya hua link) -->
             <iframe 
-                src="https://www.youtube.com/embed/2o8MnAI1CVI?autoplay=1&mute=0" 
-                title="YouTube video player" 
+                id="mainScreen"
+                src="https://www.youtube.com/embed/2o8MnAI1CVI?autoplay=1" 
+                title="Live TV" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                referrerpolicy="strict-origin-when-cross-origin" 
                 allowfullscreen>
             </iframe>
         </div>
     </div>
+
+    <!-- Channel Buttons -->
+    <div class="channel-list">
+        <!-- Aapka Channel -->
+        <div class="channel-btn active-btn" onclick="changeChannel('2o8MnAI1CVI', this)">
+            My Channel
+        </div>
+        
+        <!-- Geo News -->
+        <div class="channel-btn" onclick="changeChannel('HnKvJ1k7Zbs', this)">
+            Geo News
+        </div>
+
+        <!-- Ary News -->
+        <div class="channel-btn" onclick="changeChannel('sUKwTVAc0Vo', this)">
+            ARY News
+        </div>
+
+        <!-- Samaa TV -->
+        <div class="channel-btn" onclick="changeChannel('OFOU-p2x-lI', this)">
+            Samaa TV
+        </div>
+
+        <!-- Dunya News -->
+        <div class="channel-btn" onclick="changeChannel('I7wV6645rJE', this)">
+            Dunya News
+        </div>
+
+        <!-- Express News -->
+        <div class="channel-btn" onclick="changeChannel('VPz3q7hW0iE', this)">
+            Express News
+        </div>
+        
+         <!-- Bol News -->
+         <div class="channel-btn" onclick="changeChannel('x921rQx32h0', this)">
+            Bol News
+        </div>
+    </div>
+
+    <footer>
+        Click on a button to change the channel.
+    </footer>
+
+    <script>
+        // Ye function channel change karta hai
+        function changeChannel(videoId, btnElement) {
+            var iframe = document.getElementById('mainScreen');
+            
+            // Naya video load karein aur autoplay lagayein
+            iframe.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+
+            // Purane buttons se active color hatayein
+            var buttons = document.getElementsByClassName('channel-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active-btn');
+            }
+
+            // Jis button par click hua usko green karein
+            btnElement.classList.add('active-btn');
+        }
+    </script>
 
 </body>
 </html>

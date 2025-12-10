@@ -3,386 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pakistan TV - Ultimate Edition</title>
-    
-    <!-- Icons Library -->
+    <title>CYBERPAK | Live Command Center</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-        /* --- CORE SETTINGS --- */
+        /* --- CYBERPUNK VARIABLES --- */
         :root {
-            --bg-dark: #0f1014;
-            --bg-panel: #181920;
-            --text-main: #ffffff;
-            --text-mute: #8a8d9b;
-            --accent: #2962ff;
-            --geo-color: #ff8800;
-            --ary-color: #00ccff;
-            --bol-color: #ff0000;
-            --samaa-color: #0066ff;
-            --dunya-color: #ffcc00;
-            --express-color: #ff3333;
+            --neon-blue: #00f3ff;
+            --neon-pink: #bc13fe;
+            --neon-green: #0aff0a;
+            --bg-dark: #050510;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(0, 243, 255, 0.3);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-image: 
+                linear-gradient(rgba(5, 5, 16, 0.9), rgba(5, 5, 16, 0.9)),
+                url('https://www.transparenttextures.com/patterns/cubes.png');
+            font-family: 'Courier New', Courier, monospace; /* Tech Font */
+            color: var(--neon-blue);
             height: 100vh;
-            overflow: hidden; /* No scroll on body, scroll inside panels */
-            display: flex;
-        }
-
-        /* --- SIDEBAR (Channel List) --- */
-        aside {
-            width: 280px;
-            background-color: var(--bg-panel);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid rgba(255,255,255,0.05);
-            transition: transform 0.3s ease;
-            z-index: 100;
         }
 
-        .sidebar-header {
-            padding: 20px;
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--text-main);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        /* --- SYSTEM BOOT ANIMATION --- */
+        .boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            z-index: 9999;
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            animation: bootUp 2.5s forwards;
         }
 
-        .search-box {
-            padding: 15px;
+        .loader {
+            width: 200px;
+            height: 5px;
+            background: #333;
+            margin-top: 20px;
+            position: relative;
+        }
+        .loader::after {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; height: 100%; width: 0%;
+            background: var(--neon-green);
+            animation: loadBar 2s ease-in-out forwards;
         }
 
-        .search-box input {
-            width: 100%;
-            background: #000;
-            border: 1px solid #333;
-            padding: 10px 15px;
-            border-radius: 8px;
-            color: white;
-            outline: none;
+        @keyframes bootUp { 90% { opacity: 1; } 100% { opacity: 0; pointer-events: none; } }
+        @keyframes loadBar { 100% { width: 100%; } }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 20px rgba(0, 243, 255, 0.1);
         }
 
-        .search-box input:focus { border-color: var(--accent); }
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
 
-        .channel-list {
+        .sys-info {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .sys-item i { color: var(--neon-pink); margin-right: 5px; }
+
+        /* --- MAIN LAYOUT --- */
+        .container {
+            display: flex;
             flex: 1;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR CHANNEL LIST --- */
+        .sidebar {
+            width: 260px;
+            background: rgba(0,0,0,0.4);
+            border-right: 1px solid var(--border);
             overflow-y: auto;
             padding: 10px;
         }
 
-        /* Scrollbar Styling */
-        .channel-list::-webkit-scrollbar { width: 5px; }
-        .channel-list::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        .channel-item {
+        .channel-btn {
             display: flex;
             align-items: center;
-            padding: 12px 15px;
+            padding: 15px;
             margin-bottom: 8px;
-            border-radius: 8px;
+            background: var(--glass);
+            border: 1px solid transparent;
+            color: white;
             cursor: pointer;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
+            transition: 0.3s;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
         }
 
-        .channel-item:hover {
-            background-color: rgba(255,255,255,0.05);
+        .channel-btn:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--neon-blue);
+            transform: translateX(5px);
         }
 
-        .channel-item.active {
-            background-color: rgba(255,255,255,0.1);
-            border-left: 3px solid var(--accent);
+        .channel-btn.active {
+            background: rgba(0, 243, 255, 0.2);
+            border: 1px solid var(--neon-blue);
+            box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.2);
+            text-shadow: 0 0 5px white;
         }
 
-        .ch-icon {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #222;
-            border-radius: 50%;
-            margin-right: 12px;
+        .ch-num {
             font-size: 12px;
+            color: var(--neon-pink);
+            margin-right: 10px;
             font-weight: bold;
         }
 
-        .ch-info h4 { font-size: 14px; font-weight: 600; }
-        .ch-info span { font-size: 11px; color: var(--text-mute); }
-
-        /* --- MAIN CONTENT AREA --- */
-        main {
+        /* --- MAIN STAGE --- */
+        .main-stage {
             flex: 1;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             position: relative;
         }
 
-        /* Top Bar */
-        .top-bar {
-            padding: 15px 30px;
+        /* Screen Frame */
+        .screen-frame {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 2px solid var(--border);
+            background: #000;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.15);
+            padding: 5px;
+        }
+
+        /* Corners Effect */
+        .screen-frame::before {
+            content: ''; position: absolute; top: -2px; left: -2px; width: 20px; height: 20px;
+            border-top: 3px solid var(--neon-pink); border-left: 3px solid var(--neon-pink);
+        }
+        .screen-frame::after {
+            content: ''; position: absolute; bottom: -2px; right: -2px; width: 20px; height: 20px;
+            border-bottom: 3px solid var(--neon-pink); border-right: 3px solid var(--neon-pink);
+        }
+
+        .video-box {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-box iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* Scanline Effect Overlay (Pointer events none so you can click video) */
+        }
+
+        /* Scanlines Overlay */
+        .scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.3;
+        }
+
+        /* --- CONTROL DECK --- */
+        .control-deck {
+            max-width: 1200px;
+            margin: 20px auto 0;
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.6);
+            border-top: 1px solid var(--border);
         }
 
-        .status-badge {
-            background: rgba(255, 0, 0, 0.2);
-            color: #ff4444;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+        .now-playing h2 { font-size: 18px; color: white; margin-bottom: 5px; }
+        .now-playing p { font-size: 12px; color: var(--neon-green); }
+
+        .visualizer {
             display: flex;
-            align-items: center;
-            gap: 6px;
+            gap: 3px;
+            align-items: flex-end;
+            height: 30px;
         }
+        .bar { width: 5px; background: var(--neon-blue); animation: equalizer 0.5s infinite; }
+        .bar:nth-child(2) { animation-delay: 0.1s; background: var(--neon-pink); }
+        .bar:nth-child(3) { animation-delay: 0.2s; background: var(--neon-green); }
+        .bar:nth-child(4) { animation-delay: 0.3s; }
 
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #ff4444;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
+        @keyframes equalizer { 0% { height: 5px; } 50% { height: 30px; } 100% { height: 5px; } }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-        .controls button {
-            background: transparent;
-            border: 1px solid #444;
-            color: #ddd;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .controls button:hover { background: white; color: black; }
-
-        /* Video Player */
-        .player-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        .video-wrapper {
-            width: 100%;
-            max-width: 1100px;
-            aspect-ratio: 16/9;
-            background: black;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5); /* Dynamic Shadow */
-            position: relative;
-            transition: box-shadow 0.5s ease;
-        }
-
-        .video-wrapper iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* Channel Info Below Video */
-        .stream-info {
-            padding: 20px 40px;
-            background: linear-gradient(to top, var(--bg-dark), transparent);
-        }
-
-        .stream-title { font-size: 24px; margin-bottom: 5px; }
-        .viewers { color: var(--text-mute); font-size: 14px; display: flex; align-items: center; gap: 5px; }
-
-        /* --- MOBILE RESPONSIVE --- */
+        /* Responsive */
         @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; }
-            aside { width: 100%; height: auto; max-height: 40vh; }
-            main { height: auto; }
-            .video-wrapper { border-radius: 0; }
-            .top-bar { padding: 10px; }
-            .stream-title { font-size: 18px; }
+            .container { flex-direction: column; overflow-y: auto; }
+            .sidebar { width: 100%; height: 200px; order: 2; }
+            .main-stage { order: 1; padding: 10px; }
+            .brand { font-size: 18px; }
+            .sys-info { display: none; }
         }
-
-        /* --- CINEMA MODE CLASS --- */
-        body.cinema-mode aside { display: none; }
-        body.cinema-mode .top-bar { opacity: 0.2; transition: 0.3s; }
-        body.cinema-mode .top-bar:hover { opacity: 1; }
-        body.cinema-mode .stream-info { display: none; }
-        body.cinema-mode .player-container { height: 100vh; padding: 0; background: black; }
-        body.cinema-mode .video-wrapper { max-width: 100%; height: 100%; border-radius: 0; }
-
-        /* Brand Colors for Sidebar Indicators */
-        .border-bol { border-left-color: var(--bol-color) !important; }
-        .border-geo { border-left-color: var(--geo-color) !important; }
-        .border-ary { border-left-color: var(--ary-color) !important; }
-        .border-samaa { border-left-color: var(--samaa-color) !important; }
-
     </style>
 </head>
 <body>
 
-    <!-- LEFT SIDEBAR -->
-    <aside id="sidebar">
-        <div class="sidebar-header">
-            <i class="fas fa-tv"></i> PAK STREAM
-        </div>
-        
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search channels..." onkeyup="filterChannels()">
-        </div>
+    <!-- Loading Animation -->
+    <div class="boot-screen">
+        <h1 style="color:white; font-family: monospace;">INITIALIZING SYSTEM...</h1>
+        <div class="loader"></div>
+    </div>
 
-        <div class="channel-list" id="channelList">
-            <!-- Channels will be generated here -->
+    <!-- Header -->
+    <header>
+        <div class="brand"><i class="fas fa-satellite-dish"></i> CYBERPAK TV</div>
+        <div class="sys-info">
+            <div class="sys-item"><i class="fas fa-clock"></i> <span id="clock">00:00:00</span></div>
+            <div class="sys-item"><i class="fas fa-calendar-alt"></i> <span id="date">Jan 01</span></div>
+            <div class="sys-item" style="color:var(--neon-green);"><i class="fas fa-wifi"></i> ONLINE</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
             
-            <div class="channel-item active border-bol" onclick="playChannel('U60zQv23NjY', 'BOL News', '#ff0000', this)">
-                <div class="ch-icon" style="color: #ff0000;">BOL</div>
-                <div class="ch-info"><h4>BOL News</h4><span>Live 24/7</span></div>
+            <div class="channel-btn active" onclick="loadChannel('U60zQv23NjY', 'BOL News', this)">
+                <span class="ch-num">01</span> BOL News
             </div>
 
-            <div class="channel-item border-geo" onclick="playChannel('2o8MnAI1CVI', 'Geo News', '#ff8800', this)">
-                <div class="ch-icon" style="color: #ff8800;">GEO</div>
-                <div class="ch-info"><h4>Geo News</h4><span>Pakistan's #1</span></div>
+            <div class="channel-btn" onclick="loadChannel('2o8MnAI1CVI', 'Geo News', this)">
+                <span class="ch-num">02</span> Geo News
             </div>
 
-            <div class="channel-item border-ary" onclick="playChannel('RqUZ2Fv9l8w', 'ARY News', '#00ccff', this)">
-                <div class="ch-icon" style="color: #00ccff;">ARY</div>
-                <div class="ch-info"><h4>ARY News</h4><span>Live Stream</span></div>
+            <div class="channel-btn" onclick="loadChannel('RqUZ2Fv9l8w', 'ARY News', this)">
+                <span class="ch-num">03</span> ARY News
             </div>
 
-            <div class="channel-item border-samaa" onclick="playChannel('0ozWs13Msus', 'Samaa TV', '#0066ff', this)">
-                <div class="ch-icon" style="color: #0066ff;">SAM</div>
-                <div class="ch-info"><h4>Samaa TV</h4><span>Nayi Soch</span></div>
+            <div class="channel-btn" onclick="loadChannel('0ozWs13Msus', 'Samaa TV', this)">
+                <span class="ch-num">04</span> Samaa TV
             </div>
 
-            <div class="channel-item" onclick="playChannel('GlHSFtTFfJE', 'Dunya News', '#ffcc00', this)">
-                <div class="ch-icon" style="color: #ffcc00;">DUN</div>
-                <div class="ch-info"><h4>Dunya News</h4><span>Khabar Ki Dunya</span></div>
+            <div class="channel-btn" onclick="loadChannel('GlHSFtTFfJE', 'Dunya News', this)">
+                <span class="ch-num">05</span> Dunya News
             </div>
 
-            <div class="channel-item" onclick="playChannel('6i2L8XcQE1o', 'Express News', '#ff3333', this)">
-                <div class="ch-icon" style="color: #ff3333;">EXP</div>
-                <div class="ch-info"><h4>Express News</h4><span>Har Khabar Par Nazar</span></div>
+            <div class="channel-btn" onclick="loadChannel('6i2L8XcQE1o', 'Express News', this)">
+                <span class="ch-num">06</span> Express News
             </div>
 
-            <div class="channel-item" onclick="playChannel('8uh7YorHaa8', '92 News HD', '#00cc66', this)">
-                <div class="ch-icon" style="color: #00cc66;">92</div>
-                <div class="ch-info"><h4>92 News HD</h4><span>Bakhabar</span></div>
+            <div class="channel-btn" onclick="loadChannel('8uh7YorHaa8', '92 News HD', this)">
+                <span class="ch-num">07</span> 92 News HD
             </div>
 
-            <div class="channel-item" onclick="playChannel('8mhPYTm3kEs', 'GNN News', '#ff00ff', this)">
-                <div class="ch-icon" style="color: #ff00ff;">GNN</div>
-                <div class="ch-info"><h4>GNN News</h4><span>Live Transmission</span></div>
+            <div class="channel-btn" onclick="loadChannel('8mhPYTm3kEs', 'GNN News', this)">
+                <span class="ch-num">08</span> GNN News
             </div>
 
-            <div class="channel-item" onclick="playChannel('-6o5mV_5wGw', 'Hum News', '#ffffff', this)">
-                <div class="ch-icon">HUM</div>
-                <div class="ch-info"><h4>Hum News</h4><span>Live</span></div>
+            <div class="channel-btn" onclick="loadChannel('-6o5mV_5wGw', 'Hum News', this)">
+                <span class="ch-num">09</span> Hum News
             </div>
 
-            <div class="channel-item" onclick="playChannel('KK9eki0N8sQ', 'Public News', '#ff5500', this)">
-                <div class="ch-icon" style="color: #ff5500;">PUB</div>
-                <div class="ch-info"><h4>Public News</h4><span>Public Ki Awaz</span></div>
+            <div class="channel-btn" onclick="loadChannel('KK9eki0N8sQ', 'Public News', this)">
+                <span class="ch-num">10</span> Public News
             </div>
 
         </div>
-    </aside>
 
-    <!-- MAIN PLAYER AREA -->
-    <main>
-        <div class="top-bar">
-            <div class="status-badge">
-                <div class="live-dot"></div> LIVE
+        <!-- Main Screen -->
+        <div class="main-stage">
+            <div class="screen-frame">
+                <div class="video-box">
+                    <div class="scanlines"></div>
+                    <iframe 
+                        id="mainPlayer"
+                        src="https://www.youtube.com/embed/U60zQv23NjY?autoplay=1" 
+                        title="Live Stream" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
             </div>
-            <div class="controls">
-                <button onclick="toggleCinemaMode()"><i class="fas fa-expand"></i> Cinema Mode</button>
+
+            <!-- Info Panel -->
+            <div class="control-deck">
+                <div class="now-playing">
+                    <h2 id="channelTitle">BOL News</h2>
+                    <p>LIVE TRANSMISSION • <span style="color:red;">● REC</span></p>
+                </div>
+                
+                <div class="visualizer">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
             </div>
         </div>
-
-        <div class="player-container">
-            <div class="video-wrapper" id="videoBox" style="box-shadow: 0 0 60px rgba(255, 0, 0, 0.4);">
-                <iframe 
-                    id="mainPlayer"
-                    src="https://www.youtube.com/embed/U60zQv23NjY?autoplay=1" 
-                    title="Live Stream" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-        </div>
-
-        <div class="stream-info">
-            <h1 class="stream-title" id="channelTitle">BOL News</h1>
-            <div class="viewers">
-                <i class="fas fa-eye"></i> <span id="viewerCount">245,392</span> watching now
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
-        // Channel Switching Logic
-        function playChannel(id, name, color, element) {
-            // Update Video
-            document.getElementById('mainPlayer').src = "https://www.youtube.com/embed/" + id + "?autoplay=1";
+        // 1. Channel Changer Logic
+        function loadChannel(id, name, btn) {
+            // Change Video
+            document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
             
-            // Update Title
+            // Change Text
             document.getElementById('channelTitle').innerText = name;
+
+            // Handle Active State
+            let buttons = document.querySelectorAll('.channel-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // 2. Real-time Clock
+        function updateTime() {
+            const now = new Date();
             
-            // Update Glow Color (Ambient Lighting)
-            document.getElementById('videoBox').style.boxShadow = `0 0 60px ${color}66`; // 66 adds transparency
-
-            // Update Active Class in List
-            var items = document.querySelectorAll('.channel-item');
-            items.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
-
-            // Simulate viewer count change
-            updateViewers();
+            // Time
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+            
+            // Date
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            document.getElementById('date').innerText = now.toLocaleDateString('en-US', options);
         }
-
-        // Search/Filter Function
-        function filterChannels() {
-            var input = document.getElementById('searchInput');
-            var filter = input.value.toUpperCase();
-            var list = document.getElementById("channelList");
-            var items = list.getElementsByClassName('channel-item');
-
-            for (var i = 0; i < items.length; i++) {
-                var h4 = items[i].getElementsByTagName("h4")[0];
-                var txtValue = h4.textContent || h4.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    items[i].style.display = "flex";
-                } else {
-                    items[i].style.display = "none";
-                }
-            }
-        }
-
-        // Cinema Mode Toggle
-        function toggleCinemaMode() {
-            document.body.classList.toggle('cinema-mode');
-        }
-
-        // Fake Viewer Counter Animator
-        function updateViewers() {
-            let count = Math.floor(Math.random() * (500000 - 100000) + 100000);
-            document.getElementById('viewerCount').innerText = count.toLocaleString();
-        }
-        
-        // Update viewers every 5 seconds
-        setInterval(updateViewers, 5000);
+        setInterval(updateTime, 1000);
+        updateTime();
 
     </script>
 </body>

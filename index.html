@@ -3,285 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pakistan Live News Hub</title>
+    <title>Pakistan TV - Ultimate Edition</title>
+    
+    <!-- Icons Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* --- MODERN ANIMATED BACKGROUND --- */
+        /* --- CORE SETTINGS --- */
+        :root {
+            --bg-dark: #0f1014;
+            --bg-panel: #181920;
+            --text-main: #ffffff;
+            --text-mute: #8a8d9b;
+            --accent: #2962ff;
+            --geo-color: #ff8800;
+            --ary-color: #00ccff;
+            --bol-color: #ff0000;
+            --samaa-color: #0066ff;
+            --dunya-color: #ffcc00;
+            --express-color: #ff3333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #000000);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite; /* Background animation */
-            color: white;
-            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden; /* No scroll on body, scroll inside panels */
+            display: flex;
+        }
+
+        /* --- SIDEBAR (Channel List) --- */
+        aside {
+            width: 280px;
+            background-color: var(--bg-panel);
             display: flex;
             flex-direction: column;
-            align-items: center;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+            z-index: 100;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* --- HEADER & STATUS --- */
-        header {
-            width: 90%;
-            max-width: 1000px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1); /* Glass Effect */
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .logo {
-            font-size: 22px;
+        .sidebar-header {
+            padding: 20px;
+            font-size: 20px;
             font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: -webkit-linear-gradient(#eee, #333);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0px 0px 10px rgba(255,255,255,0.5);
-        }
-
-        #current-status {
-            color: #00ff88;
-            font-size: 14px;
-            font-weight: bold;
+            letter-spacing: 1px;
+            color: var(--text-main);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .live-dot {
-            height: 10px;
-            width: 10px;
-            background-color: red;
+        .search-box {
+            padding: 15px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #333;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+
+        .search-box input:focus { border-color: var(--accent); }
+
+        .channel-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        /* Scrollbar Styling */
+        .channel-list::-webkit-scrollbar { width: 5px; }
+        .channel-list::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .channel-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .channel-item.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 3px solid var(--accent);
+        }
+
+        .ch-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #222;
             border-radius: 50%;
-            box-shadow: 0 0 10px red;
-            animation: blink 1s infinite;
+            margin-right: 12px;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        @keyframes blink {
-            50% { opacity: 0.5; }
-        }
+        .ch-info h4 { font-size: 14px; font-weight: 600; }
+        .ch-info span { font-size: 11px; color: var(--text-mute); }
 
-        /* --- CINEMATIC VIDEO PLAYER --- */
-        .player-wrapper {
-            margin-top: 20px;
-            width: 95%;
-            max-width: 950px;
+        /* --- MAIN CONTENT AREA --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             position: relative;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            padding: 5px 12px;
             border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .aspect-ratio {
-            padding-bottom: 56.25%; /* 16:9 */
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        .controls button {
+            background: transparent;
+            border: 1px solid #444;
+            color: #ddd;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .controls button:hover { background: white; color: black; }
+
+        /* Video Player */
+        .player-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             position: relative;
-            background: black;
         }
 
-        .aspect-ratio iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .video-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16/9;
+            background: black;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); /* Dynamic Shadow */
+            position: relative;
+            transition: box-shadow 0.5s ease;
+        }
+
+        .video-wrapper iframe {
             width: 100%;
             height: 100%;
-        }
-
-        /* --- CHANNEL CARDS GRID --- */
-        .channel-grid {
-            margin-top: 30px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            width: 95%;
-            max-width: 950px;
-            padding-bottom: 80px; /* Space for footer ticker */
-        }
-
-        .channel-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            text-align: center;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .channel-card h3 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #ccc;
-            z-index: 2;
-            position: relative;
-        }
-
-        /* Hover Effects */
-        .channel-card:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-
-        /* Active State (Selected Channel) */
-        .channel-card.active {
-            background: white;
-            color: black;
-            font-weight: bold;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
             border: none;
         }
 
-        /* Branding Colors for Active State */
-        .channel-card.bol.active { background: #aa0000; color: white; box-shadow: 0 0 20px red; }
-        .channel-card.geo.active { background: #ff9900; color: black; box-shadow: 0 0 20px orange; }
-        .channel-card.ary.active { background: #0055aa; color: white; box-shadow: 0 0 20px cyan; }
-        .channel-card.samaa.active { background: #0088ff; color: white; box-shadow: 0 0 20px blue; }
-        .channel-card.dunya.active { background: #ffcc00; color: black; }
-        .channel-card.express.active { background: #ff3333; color: white; }
-        .channel-card.nine2.active { background: #00cc66; color: white; }
-
-        /* --- BREAKING NEWS TICKER (Footer) --- */
-        .news-ticker {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #cc0000;
-            color: white;
-            padding: 10px 0;
-            overflow: hidden;
-            white-space: nowrap;
-            box-shadow: 0 -5px 10px rgba(0,0,0,0.5);
-            font-weight: bold;
-            font-size: 14px;
-            z-index: 100;
+        /* Channel Info Below Video */
+        .stream-info {
+            padding: 20px 40px;
+            background: linear-gradient(to top, var(--bg-dark), transparent);
         }
 
-        .ticker-content {
-            display: inline-block;
-            animation: marquee 20s linear infinite;
+        .stream-title { font-size: 24px; margin-bottom: 5px; }
+        .viewers { color: var(--text-mute); font-size: 14px; display: flex; align-items: center; gap: 5px; }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; }
+            aside { width: 100%; height: auto; max-height: 40vh; }
+            main { height: auto; }
+            .video-wrapper { border-radius: 0; }
+            .top-bar { padding: 10px; }
+            .stream-title { font-size: 18px; }
         }
 
-        @keyframes marquee {
-            0% { transform: translateX(100vw); }
-            100% { transform: translateX(-100%); }
-        }
+        /* --- CINEMA MODE CLASS --- */
+        body.cinema-mode aside { display: none; }
+        body.cinema-mode .top-bar { opacity: 0.2; transition: 0.3s; }
+        body.cinema-mode .top-bar:hover { opacity: 1; }
+        body.cinema-mode .stream-info { display: none; }
+        body.cinema-mode .player-container { height: 100vh; padding: 0; background: black; }
+        body.cinema-mode .video-wrapper { max-width: 100%; height: 100%; border-radius: 0; }
+
+        /* Brand Colors for Sidebar Indicators */
+        .border-bol { border-left-color: var(--bol-color) !important; }
+        .border-geo { border-left-color: var(--geo-color) !important; }
+        .border-ary { border-left-color: var(--ary-color) !important; }
+        .border-samaa { border-left-color: var(--samaa-color) !important; }
 
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">🇵🇰 LIVE STREAM HUB</div>
-        <div id="current-status">
-            <div class="live-dot"></div>
-            <span id="channel-name-display">Now Watching: BOL News</span>
+    <!-- LEFT SIDEBAR -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tv"></i> PAK STREAM
         </div>
-    </header>
-
-    <!-- MAIN PLAYER -->
-    <div class="player-wrapper">
-        <div class="aspect-ratio">
-            <iframe 
-                id="mainPlayer"
-                src="https://www.youtube.com/embed/U60zQv23NjY?autoplay=1" 
-                title="Live TV" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-            </iframe>
-        </div>
-    </div>
-
-    <!-- CHANNEL LIST -->
-    <div class="channel-grid">
         
-        <div class="channel-card bol active" onclick="playChannel('U60zQv23NjY', 'BOL News', this)">
-            <h3>BOL News</h3>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search channels..." onkeyup="filterChannels()">
         </div>
 
-        <div class="channel-card geo" onclick="playChannel('2o8MnAI1CVI', 'Geo News', this)">
-            <h3>Geo News</h3>
+        <div class="channel-list" id="channelList">
+            <!-- Channels will be generated here -->
+            
+            <div class="channel-item active border-bol" onclick="playChannel('U60zQv23NjY', 'BOL News', '#ff0000', this)">
+                <div class="ch-icon" style="color: #ff0000;">BOL</div>
+                <div class="ch-info"><h4>BOL News</h4><span>Live 24/7</span></div>
+            </div>
+
+            <div class="channel-item border-geo" onclick="playChannel('2o8MnAI1CVI', 'Geo News', '#ff8800', this)">
+                <div class="ch-icon" style="color: #ff8800;">GEO</div>
+                <div class="ch-info"><h4>Geo News</h4><span>Pakistan's #1</span></div>
+            </div>
+
+            <div class="channel-item border-ary" onclick="playChannel('RqUZ2Fv9l8w', 'ARY News', '#00ccff', this)">
+                <div class="ch-icon" style="color: #00ccff;">ARY</div>
+                <div class="ch-info"><h4>ARY News</h4><span>Live Stream</span></div>
+            </div>
+
+            <div class="channel-item border-samaa" onclick="playChannel('0ozWs13Msus', 'Samaa TV', '#0066ff', this)">
+                <div class="ch-icon" style="color: #0066ff;">SAM</div>
+                <div class="ch-info"><h4>Samaa TV</h4><span>Nayi Soch</span></div>
+            </div>
+
+            <div class="channel-item" onclick="playChannel('GlHSFtTFfJE', 'Dunya News', '#ffcc00', this)">
+                <div class="ch-icon" style="color: #ffcc00;">DUN</div>
+                <div class="ch-info"><h4>Dunya News</h4><span>Khabar Ki Dunya</span></div>
+            </div>
+
+            <div class="channel-item" onclick="playChannel('6i2L8XcQE1o', 'Express News', '#ff3333', this)">
+                <div class="ch-icon" style="color: #ff3333;">EXP</div>
+                <div class="ch-info"><h4>Express News</h4><span>Har Khabar Par Nazar</span></div>
+            </div>
+
+            <div class="channel-item" onclick="playChannel('8uh7YorHaa8', '92 News HD', '#00cc66', this)">
+                <div class="ch-icon" style="color: #00cc66;">92</div>
+                <div class="ch-info"><h4>92 News HD</h4><span>Bakhabar</span></div>
+            </div>
+
+            <div class="channel-item" onclick="playChannel('8mhPYTm3kEs', 'GNN News', '#ff00ff', this)">
+                <div class="ch-icon" style="color: #ff00ff;">GNN</div>
+                <div class="ch-info"><h4>GNN News</h4><span>Live Transmission</span></div>
+            </div>
+
+            <div class="channel-item" onclick="playChannel('-6o5mV_5wGw', 'Hum News', '#ffffff', this)">
+                <div class="ch-icon">HUM</div>
+                <div class="ch-info"><h4>Hum News</h4><span>Live</span></div>
+            </div>
+
+            <div class="channel-item" onclick="playChannel('KK9eki0N8sQ', 'Public News', '#ff5500', this)">
+                <div class="ch-icon" style="color: #ff5500;">PUB</div>
+                <div class="ch-info"><h4>Public News</h4><span>Public Ki Awaz</span></div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- MAIN PLAYER AREA -->
+    <main>
+        <div class="top-bar">
+            <div class="status-badge">
+                <div class="live-dot"></div> LIVE
+            </div>
+            <div class="controls">
+                <button onclick="toggleCinemaMode()"><i class="fas fa-expand"></i> Cinema Mode</button>
+            </div>
         </div>
 
-        <div class="channel-card ary" onclick="playChannel('RqUZ2Fv9l8w', 'ARY News', this)">
-            <h3>ARY News</h3>
+        <div class="player-container">
+            <div class="video-wrapper" id="videoBox" style="box-shadow: 0 0 60px rgba(255, 0, 0, 0.4);">
+                <iframe 
+                    id="mainPlayer"
+                    src="https://www.youtube.com/embed/U60zQv23NjY?autoplay=1" 
+                    title="Live Stream" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>
+            </div>
         </div>
 
-        <div class="channel-card samaa" onclick="playChannel('0ozWs13Msus', 'Samaa TV', this)">
-            <h3>Samaa TV</h3>
+        <div class="stream-info">
+            <h1 class="stream-title" id="channelTitle">BOL News</h1>
+            <div class="viewers">
+                <i class="fas fa-eye"></i> <span id="viewerCount">245,392</span> watching now
+            </div>
         </div>
-
-        <div class="channel-card dunya" onclick="playChannel('GlHSFtTFfJE', 'Dunya News', this)">
-            <h3>Dunya News</h3>
-        </div>
-
-        <div class="channel-card express" onclick="playChannel('6i2L8XcQE1o', 'Express News', this)">
-            <h3>Express News</h3>
-        </div>
-
-        <div class="channel-card nine2" onclick="playChannel('8uh7YorHaa8', '92 News HD', this)">
-            <h3>92 News HD</h3>
-        </div>
-
-        <div class="channel-card" onclick="playChannel('8mhPYTm3kEs', 'GNN News', this)">
-            <h3>GNN News</h3>
-        </div>
-
-        <div class="channel-card" onclick="playChannel('-6o5mV_5wGw', 'Hum News', this)">
-            <h3>Hum News</h3>
-        </div>
-
-        <div class="channel-card" onclick="playChannel('KK9eki0N8sQ', 'Public News', this)">
-            <h3>Public News</h3>
-        </div>
-
-    </div>
-
-    <!-- BOTTOM TICKER -->
-    <div class="news-ticker">
-        <div class="ticker-content">
-            BREAKING NEWS: Welcome to Pakistan Live TV Dashboard - Watch all your favorite news channels live in one place. Click on any channel card to switch the stream immediately. Stay Updated! 
-        </div>
-    </div>
+    </main>
 
     <script>
-        function playChannel(videoId, channelName, cardElement) {
-            // 1. Change Video Source
-            var player = document.getElementById('mainPlayer');
-            player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+        // Channel Switching Logic
+        function playChannel(id, name, color, element) {
+            // Update Video
+            document.getElementById('mainPlayer').src = "https://www.youtube.com/embed/" + id + "?autoplay=1";
+            
+            // Update Title
+            document.getElementById('channelTitle').innerText = name;
+            
+            // Update Glow Color (Ambient Lighting)
+            document.getElementById('videoBox').style.boxShadow = `0 0 60px ${color}66`; // 66 adds transparency
 
-            // 2. Update Header Text
-            var statusText = document.getElementById('channel-name-display');
-            statusText.innerText = "Now Watching: " + channelName;
+            // Update Active Class in List
+            var items = document.querySelectorAll('.channel-item');
+            items.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
 
-            // 3. Remove 'active' class from all cards
-            var cards = document.querySelectorAll('.channel-card');
-            cards.forEach(card => {
-                card.classList.remove('active');
-            });
-
-            // 4. Add 'active' class to clicked card
-            cardElement.classList.add('active');
+            // Simulate viewer count change
+            updateViewers();
         }
-    </script>
 
+        // Search/Filter Function
+        function filterChannels() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var list = document.getElementById("channelList");
+            var items = list.getElementsByClassName('channel-item');
+
+            for (var i = 0; i < items.length; i++) {
+                var h4 = items[i].getElementsByTagName("h4")[0];
+                var txtValue = h4.textContent || h4.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    items[i].style.display = "flex";
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
+        }
+
+        // Cinema Mode Toggle
+        function toggleCinemaMode() {
+            document.body.classList.toggle('cinema-mode');
+        }
+
+        // Fake Viewer Counter Animator
+        function updateViewers() {
+            let count = Math.floor(Math.random() * (500000 - 100000) + 100000);
+            document.getElementById('viewerCount').innerText = count.toLocaleString();
+        }
+        
+        // Update viewers every 5 seconds
+        setInterval(updateViewers, 5000);
+
+    </script>
 </body>
 </html>

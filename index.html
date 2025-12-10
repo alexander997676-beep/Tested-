@@ -3,61 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Pakistan News Dashboard</title>
+    <title>Pakistan Live News Hub</title>
     <style>
-        /* --- WEBSITE SETTINGS --- */
+        /* --- MODERN ANIMATED BACKGROUND --- */
         body {
             margin: 0;
             padding: 0;
-            background-color: #0f0f0f; /* Bilkul Dark Black */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #000000);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite; /* Background animation */
             color: white;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
         }
 
-        /* --- HEADER --- */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- HEADER & STATUS --- */
         header {
-            width: 100%;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 3px solid #d4af37; /* Gold Line */
-            margin-bottom: 20px;
-            background: #1a1a1a;
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1); /* Glass Effect */
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        h1 {
-            margin: 0;
-            color: #d4af37; /* Gold Text */
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2px;
-            font-size: 24px;
+            background: -webkit-linear-gradient(#eee, #333);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 0px 10px rgba(255,255,255,0.5);
         }
 
-        /* --- TV DABA (BOX) --- */
-        .tv-container {
+        #current-status {
+            color: #00ff88;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-dot {
+            height: 10px;
+            width: 10px;
+            background-color: red;
+            border-radius: 50%;
+            box-shadow: 0 0 10px red;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        /* --- CINEMATIC VIDEO PLAYER --- */
+        .player-wrapper {
+            margin-top: 20px;
             width: 95%;
-            max-width: 900px;
-            background-color: #000;
-            padding: 10px;
-            border: 5px solid #333;
-            border-radius: 12px;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2); /* Gold Glow */
-            margin-bottom: 30px;
-        }
-
-        .screen {
+            max-width: 950px;
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
+            border-radius: 20px;
             overflow: hidden;
-            border-radius: 5px;
-            background: #000;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .screen iframe {
+        .aspect-ratio {
+            padding-bottom: 56.25%; /* 16:9 */
+            position: relative;
+            background: black;
+        }
+
+        .aspect-ratio iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -65,70 +100,105 @@
             height: 100%;
         }
 
-        /* --- BUTTONS GRID --- */
-        .channel-list {
+        /* --- CHANNEL CARDS GRID --- */
+        .channel-grid {
+            margin-top: 30px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px;
             width: 95%;
-            max-width: 900px;
-            padding-bottom: 50px;
+            max-width: 950px;
+            padding-bottom: 80px; /* Space for footer ticker */
         }
 
-        /* Button Design */
-        .btn {
-            background: #222;
-            color: #ddd;
-            border: 2px solid #444;
+        .channel-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 15px;
-            font-size: 15px;
-            font-weight: bold;
             text-align: center;
+            border-radius: 12px;
             cursor: pointer;
-            border-radius: 8px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:hover {
-            background: #444;
-            border-color: #d4af37; /* Gold border on hover */
-            transform: translateY(-3px);
-            color: #fff;
+        .channel-card h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ccc;
+            z-index: 2;
+            position: relative;
         }
 
-        /* Jo channel chal raha ho, uska style */
-        .btn.active {
-            background: #d4af37; /* Gold Background */
-            color: #000; /* Black Text */
-            border-color: #d4af37;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+        /* Hover Effects */
+        .channel-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
-        /* Specific Colors for Brands (Optional Hover) */
-        .geo:hover { border-color: #ff9900; color: #ff9900; }
-        .ary:hover { border-color: #00ccff; color: #00ccff; }
-        .bol:hover { border-color: #ff0000; color: #ff0000; }
-        .samaa:hover { border-color: #0066ff; color: #0066ff; }
-
-        footer {
-            margin-top: auto;
-            padding: 20px;
-            color: #666;
-            font-size: 12px;
+        /* Active State (Selected Channel) */
+        .channel-card.active {
+            background: white;
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            border: none;
         }
+
+        /* Branding Colors for Active State */
+        .channel-card.bol.active { background: #aa0000; color: white; box-shadow: 0 0 20px red; }
+        .channel-card.geo.active { background: #ff9900; color: black; box-shadow: 0 0 20px orange; }
+        .channel-card.ary.active { background: #0055aa; color: white; box-shadow: 0 0 20px cyan; }
+        .channel-card.samaa.active { background: #0088ff; color: white; box-shadow: 0 0 20px blue; }
+        .channel-card.dunya.active { background: #ffcc00; color: black; }
+        .channel-card.express.active { background: #ff3333; color: white; }
+        .channel-card.nine2.active { background: #00cc66; color: white; }
+
+        /* --- BREAKING NEWS TICKER (Footer) --- */
+        .news-ticker {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #cc0000;
+            color: white;
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: 0 -5px 10px rgba(0,0,0,0.5);
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Live News Pakistan</h1>
+        <div class="logo">🇵🇰 LIVE STREAM HUB</div>
+        <div id="current-status">
+            <div class="live-dot"></div>
+            <span id="channel-name-display">Now Watching: BOL News</span>
+        </div>
     </header>
 
-    <!-- TV SCREEN -->
-    <div class="tv-container">
-        <div class="screen">
-            <!-- Default Load: BOL News (First in your list) -->
+    <!-- MAIN PLAYER -->
+    <div class="player-wrapper">
+        <div class="aspect-ratio">
             <iframe 
                 id="mainPlayer"
                 src="https://www.youtube.com/embed/U60zQv23NjY?autoplay=1" 
@@ -140,79 +210,76 @@
         </div>
     </div>
 
-    <!-- BUTTONS LIST (Updated Links) -->
-    <div class="channel-list">
+    <!-- CHANNEL LIST -->
+    <div class="channel-grid">
         
-        <!-- BOL News -->
-        <div class="btn bol active" onclick="playChannel('U60zQv23NjY', this)">
-            BOL News
+        <div class="channel-card bol active" onclick="playChannel('U60zQv23NjY', 'BOL News', this)">
+            <h3>BOL News</h3>
         </div>
 
-        <!-- Geo News -->
-        <div class="btn geo" onclick="playChannel('2o8MnAI1CVI', this)">
-            Geo News
+        <div class="channel-card geo" onclick="playChannel('2o8MnAI1CVI', 'Geo News', this)">
+            <h3>Geo News</h3>
         </div>
 
-        <!-- ARY News -->
-        <div class="btn ary" onclick="playChannel('RqUZ2Fv9l8w', this)">
-            ARY News
+        <div class="channel-card ary" onclick="playChannel('RqUZ2Fv9l8w', 'ARY News', this)">
+            <h3>ARY News</h3>
         </div>
 
-        <!-- Samaa News -->
-        <div class="btn samaa" onclick="playChannel('0ozWs13Msus', this)">
-            Samaa News
+        <div class="channel-card samaa" onclick="playChannel('0ozWs13Msus', 'Samaa TV', this)">
+            <h3>Samaa TV</h3>
         </div>
 
-        <!-- Dunya News -->
-        <div class="btn" onclick="playChannel('GlHSFtTFfJE', this)">
-            Dunya News
+        <div class="channel-card dunya" onclick="playChannel('GlHSFtTFfJE', 'Dunya News', this)">
+            <h3>Dunya News</h3>
         </div>
 
-        <!-- Express News -->
-        <div class="btn" onclick="playChannel('6i2L8XcQE1o', this)">
-            Express News
+        <div class="channel-card express" onclick="playChannel('6i2L8XcQE1o', 'Express News', this)">
+            <h3>Express News</h3>
         </div>
 
-        <!-- 92 HD News -->
-        <div class="btn" onclick="playChannel('8uh7YorHaa8', this)">
-            92 News HD
+        <div class="channel-card nine2" onclick="playChannel('8uh7YorHaa8', '92 News HD', this)">
+            <h3>92 News HD</h3>
         </div>
 
-        <!-- GNN News -->
-        <div class="btn" onclick="playChannel('8mhPYTm3kEs', this)">
-            GNN News
+        <div class="channel-card" onclick="playChannel('8mhPYTm3kEs', 'GNN News', this)">
+            <h3>GNN News</h3>
         </div>
 
-        <!-- Hum News -->
-        <div class="btn" onclick="playChannel('-6o5mV_5wGw', this)">
-            Hum News
+        <div class="channel-card" onclick="playChannel('-6o5mV_5wGw', 'Hum News', this)">
+            <h3>Hum News</h3>
         </div>
 
-        <!-- Public News -->
-        <div class="btn" onclick="playChannel('KK9eki0N8sQ', this)">
-            Public News
+        <div class="channel-card" onclick="playChannel('KK9eki0N8sQ', 'Public News', this)">
+            <h3>Public News</h3>
         </div>
 
     </div>
 
-    <footer>
-        Channels powered by YouTube Live Stream
-    </footer>
+    <!-- BOTTOM TICKER -->
+    <div class="news-ticker">
+        <div class="ticker-content">
+            BREAKING NEWS: Welcome to Pakistan Live TV Dashboard - Watch all your favorite news channels live in one place. Click on any channel card to switch the stream immediately. Stay Updated! 
+        </div>
+    </div>
 
     <script>
-        function playChannel(videoId, btnElement) {
-            // 1. Iframe ka link change karein
+        function playChannel(videoId, channelName, cardElement) {
+            // 1. Change Video Source
             var player = document.getElementById('mainPlayer');
             player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
 
-            // 2. Sare buttons se 'active' class hatayein
-            var buttons = document.querySelectorAll('.btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
+            // 2. Update Header Text
+            var statusText = document.getElementById('channel-name-display');
+            statusText.innerText = "Now Watching: " + channelName;
+
+            // 3. Remove 'active' class from all cards
+            var cards = document.querySelectorAll('.channel-card');
+            cards.forEach(card => {
+                card.classList.remove('active');
             });
 
-            // 3. Jis button pe click hua usay 'active' (Gold) karein
-            btnElement.classList.add('active');
+            // 4. Add 'active' class to clicked card
+            cardElement.classList.add('active');
         }
     </script>
 

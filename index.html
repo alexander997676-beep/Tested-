@@ -3,48 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pakistan Live TV Dashboard</title>
+    <title>Live Pakistan News Dashboard</title>
     <style>
-        /* --- DESIGN SETTINGS --- */
+        /* --- WEBSITE SETTINGS --- */
         body {
-            background-color: #121212; /* Dark Theme */
-            color: white;
-            font-family: sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background-color: #0f0f0f; /* Bilkul Dark Black */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #d4af37; /* Gold Line */
+            margin-bottom: 20px;
+            background: #1a1a1a;
         }
 
         h1 {
-            color: #ffcc00; /* Gold Color */
-            margin-bottom: 20px;
+            margin: 0;
+            color: #d4af37; /* Gold Text */
             text-transform: uppercase;
-            text-align: center;
+            letter-spacing: 2px;
+            font-size: 24px;
         }
 
-        /* --- TV DABA (BOX) DESIGN --- */
-        .tv-box {
-            width: 100%;
-            max-width: 900px; /* Bada TV size */
-            background: black;
-            border: 10px solid #333; /* TV ka border */
-            border-radius: 10px;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2); /* Glowing effect */
-            overflow: hidden;
+        /* --- TV DABA (BOX) --- */
+        .tv-container {
+            width: 95%;
+            max-width: 900px;
+            background-color: #000;
+            padding: 10px;
+            border: 5px solid #333;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2); /* Gold Glow */
             margin-bottom: 30px;
-            position: relative;
         }
 
-        /* Video Responsive Rahe */
-        .video-container {
+        .screen {
             position: relative;
             padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
             height: 0;
+            overflow: hidden;
+            border-radius: 5px;
+            background: #000;
         }
 
-        .video-container iframe {
+        .screen iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -52,56 +65,74 @@
             height: 100%;
         }
 
-        /* --- BUTTONS LIST --- */
-        .channel-grid {
+        /* --- BUTTONS GRID --- */
+        .channel-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Auto adjust buttons */
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
-            width: 100%;
+            width: 95%;
             max-width: 900px;
+            padding-bottom: 50px;
         }
 
+        /* Button Design */
         .btn {
-            background-color: #222;
+            background: #222;
+            color: #ddd;
             border: 2px solid #444;
-            color: white;
             padding: 15px;
+            font-size: 15px;
+            font-weight: bold;
             text-align: center;
             cursor: pointer;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: 0.3s;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
         }
 
         .btn:hover {
-            background-color: #009933; /* Green on hover */
-            border-color: #00ff00;
-            transform: scale(1.05);
+            background: #444;
+            border-color: #d4af37; /* Gold border on hover */
+            transform: translateY(-3px);
+            color: #fff;
         }
 
-        .active-btn {
-            background-color: #cc0000 !important; /* Red for active channel */
-            border-color: red;
+        /* Jo channel chal raha ho, uska style */
+        .btn.active {
+            background: #d4af37; /* Gold Background */
+            color: #000; /* Black Text */
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
         }
 
-        /* Special Colors for Specific Channels */
-        .geo:hover { border-color: orange; color: orange; }
-        .ary:hover { border-color: cyan; color: cyan; }
-        .bol:hover { border-color: red; color: red; }
+        /* Specific Colors for Brands (Optional Hover) */
+        .geo:hover { border-color: #ff9900; color: #ff9900; }
+        .ary:hover { border-color: #00ccff; color: #00ccff; }
+        .bol:hover { border-color: #ff0000; color: #ff0000; }
+        .samaa:hover { border-color: #0066ff; color: #0066ff; }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>📺 Live Pakistan TV Channels</h1>
+    <header>
+        <h1>Live News Pakistan</h1>
+    </header>
 
     <!-- TV SCREEN -->
-    <div class="tv-box">
-        <div class="video-container">
-            <!-- Default: Aapka Channel -->
+    <div class="tv-container">
+        <div class="screen">
+            <!-- Default Load: BOL News (First in your list) -->
             <iframe 
-                id="mainScreen"
-                src="https://www.youtube.com/embed/2o8MnAI1CVI?autoplay=1" 
-                title="Live Stream" 
+                id="mainPlayer"
+                src="https://www.youtube.com/embed/U60zQv23NjY?autoplay=1" 
+                title="Live TV" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowfullscreen>
@@ -109,77 +140,79 @@
         </div>
     </div>
 
-    <!-- CHANNEL BUTTONS -->
-    <div class="channel-grid">
-        <!-- Aapka Channel -->
-        <div class="btn active-btn" onclick="changeChannel('2o8MnAI1CVI', this)">
-            📡 MY CHANNEL
+    <!-- BUTTONS LIST (Updated Links) -->
+    <div class="channel-list">
+        
+        <!-- BOL News -->
+        <div class="btn bol active" onclick="playChannel('U60zQv23NjY', this)">
+            BOL News
         </div>
 
         <!-- Geo News -->
-        <div class="btn geo" onclick="changeChannel('HnKvJ1k7Zbs', this)">
+        <div class="btn geo" onclick="playChannel('2o8MnAI1CVI', this)">
             Geo News
         </div>
 
         <!-- ARY News -->
-        <div class="btn ary" onclick="changeChannel('sUKwTVAc0Vo', this)">
+        <div class="btn ary" onclick="playChannel('RqUZ2Fv9l8w', this)">
             ARY News
         </div>
 
-        <!-- BOL News -->
-        <div class="btn bol" onclick="changeChannel('x921rQx32h0', this)">
-            BOL News
-        </div>
-
-        <!-- Samaa TV -->
-        <div class="btn" onclick="changeChannel('zGMp8bYJmJw', this)">
-            Samaa TV
+        <!-- Samaa News -->
+        <div class="btn samaa" onclick="playChannel('0ozWs13Msus', this)">
+            Samaa News
         </div>
 
         <!-- Dunya News -->
-        <div class="btn" onclick="changeChannel('I7wV6645rJE', this)">
+        <div class="btn" onclick="playChannel('GlHSFtTFfJE', this)">
             Dunya News
         </div>
 
         <!-- Express News -->
-        <div class="btn" onclick="changeChannel('VPz3q7hW0iE', this)">
+        <div class="btn" onclick="playChannel('6i2L8XcQE1o', this)">
             Express News
         </div>
 
-        <!-- 92 News -->
-        <div class="btn" onclick="changeChannel('G59P7c9B3Sg', this)">
+        <!-- 92 HD News -->
+        <div class="btn" onclick="playChannel('8uh7YorHaa8', this)">
             92 News HD
         </div>
 
         <!-- GNN News -->
-        <div class="btn" onclick="changeChannel('1w0v8t4c8s0', this)">
+        <div class="btn" onclick="playChannel('8mhPYTm3kEs', this)">
             GNN News
         </div>
 
         <!-- Hum News -->
-        <div class="btn" onclick="changeChannel('J5K7F0wHz2A', this)">
+        <div class="btn" onclick="playChannel('-6o5mV_5wGw', this)">
             Hum News
         </div>
 
         <!-- Public News -->
-        <div class="btn" onclick="changeChannel('Lqj9Qz8s-4I', this)">
+        <div class="btn" onclick="playChannel('KK9eki0N8sQ', this)">
             Public News
         </div>
+
     </div>
 
+    <footer>
+        Channels powered by YouTube Live Stream
+    </footer>
+
     <script>
-        // Channel Change Logic
-        function changeChannel(videoID, btnElement) {
-            // 1. Video change karein
-            var iframe = document.getElementById('mainScreen');
-            iframe.src = "https://www.youtube.com/embed/" + videoID + "?autoplay=1";
+        function playChannel(videoId, btnElement) {
+            // 1. Iframe ka link change karein
+            var player = document.getElementById('mainPlayer');
+            player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
 
-            // 2. Button colors reset karein
+            // 2. Sare buttons se 'active' class hatayein
             var buttons = document.querySelectorAll('.btn');
-            buttons.forEach(btn => btn.classList.remove('active-btn'));
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-            // 3. Click kiye gaye button ko Red karein
-            btnElement.classList.add('active-btn');
+            // 3. Jis button pe click hua usay 'active' (Gold) karein
+            btnElement.classList.add('active');
         }
     </script>
 
